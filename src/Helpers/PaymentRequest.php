@@ -26,14 +26,12 @@ class PaymentRequest
 	public function setCurrency(string $code): self
 	{
 		$this->currency = $code;
-		$this->currency = 'eur';
 		return $this;
 	}
 
 	public function setCountry(string $code): self
 	{
 		$this->country = $code;
-		$this->country = 'DE';
 		return $this;
 	}
 
@@ -55,12 +53,26 @@ class PaymentRequest
 			throw new InvalidStateException('Price is not set.');
 		}
 
+		$currency = Strings::lower($this->currency);
+		switch ($currency) {
+			default:
+				$price = $this->price;
+				break;
+			case 'czk':
+			case 'usd':
+			case 'eur':
+			case 'pln':
+			case 'gbp':
+				$price = $this->price * 100;
+		}
+
+
 		return [
 			'country' => $this->country,
-			'currency' => Strings::lower($this->currency),
+			'currency' => $currency,
 			'total' => [
 				'label' => 'Total',
-				'amount' => $this->price,
+				'amount' => (int) $price,
 			],
 			'requestPayerName' => true,
 			'requestPayerEmail' => true
