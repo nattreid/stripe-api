@@ -23,6 +23,12 @@ protected function createComponentButton()
     $payment->setPrice(1000);
 
     $control->setPayment($payment);
+    $control->setOnlyApplePay();        # platby pouze apple pay
+    $control->setOnlyPaymentRequest();  # pouze ostatni platby, krome apple pay
+    $control->setUnsupported('Nepodporuje');         # text nepodporovane platby v prohlizeci
+    
+    $control->setSuccessUrl('/success');
+    $control->setErrorUrl('/error');
 
     $control->onSuccess[] = function ($token) {
         

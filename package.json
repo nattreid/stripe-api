@@ -1,0 +1,16 @@
+{
+  "name": "nattreid-stripe-api",
+  "description": "Stripe for Nette Framework",
+  "repository": {
+	"type": "git",
+	"url": "git@github.com:nattreid/stripe-api.git"
+  },
+  "author": {
+	"name": "Attreid",
+	"email": "attreid@gmail.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+	"jquery": "~3.3"
+  }
+}
