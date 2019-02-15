@@ -41,7 +41,7 @@ class PaymentRequest
 		return $this;
 	}
 
-	public function getData(): array
+	private function check(): array
 	{
 		if ($this->country === null) {
 			throw new InvalidStateException('Country is not set.');
@@ -65,17 +65,33 @@ class PaymentRequest
 			case 'gbp':
 				$price = $this->price * 100;
 		}
+		return [$currency, (int) $price];
+	}
 
+	public function getPaymentData(): array
+	{
+		list($currency, $price) = $this->check();
 
 		return [
 			'country' => $this->country,
 			'currency' => $currency,
 			'total' => [
 				'label' => 'Total',
-				'amount' => (int) $price,
+				'amount' => $price,
 			],
 			'requestPayerName' => true,
 			'requestPayerEmail' => true
+		];
+	}
+
+	public function getChargeData()
+	{
+		list($currency, $price) = $this->check();
+
+		return [
+			'amount' => $price,
+			'currency' => $currency,
+			'description' => 'Charge',
 		];
 	}
 }

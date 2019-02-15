@@ -19,6 +19,7 @@ class AbstractStripeApiExtension extends CompilerExtension
 {
 	private $defaults = [
 		'publishableApiKey' => null,
+		'secretApiKey' => null,
 	];
 
 	public function loadConfiguration(): void
@@ -43,6 +44,7 @@ class AbstractStripeApiExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 		return $builder->addDefinition($this->prefix('config'))
 			->setFactory(StripeApiConfig::class)
-			->addSetup('$publishableApiKey', [$config['publishableApiKey']]);
+			->addSetup('$publishableApiKey', [$config['publishableApiKey']])
+			->addSetup('$secretApiKey', [$config['secretApiKey']]);
 	}
 }

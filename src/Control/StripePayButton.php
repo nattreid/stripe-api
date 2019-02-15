@@ -7,6 +7,7 @@ namespace NAttreid\StripeApi\Control;
 use NAttreid\StripeApi\Helpers\PaymentRequest;
 use NAttreid\StripeApi\Helpers\StripeException;
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
+use NAttreid\StripeApi\StripeClient;
 use Nette\Application\AbortException;
 use Nette\Application\UI\Control;
 use Nette\InvalidStateException;
@@ -25,6 +26,9 @@ class StripePayButton extends Control
 	/** @var StripeApiConfig */
 	private $config;
 
+	/** @var StripeClient */
+	private $client;
+
 	/** @var PaymentRequest */
 	private $payment;
 
@@ -40,10 +44,11 @@ class StripePayButton extends Control
 	/** @var string|null */
 	private $type;
 
-	public function __construct(StripeApiConfig $config)
+	public function __construct(StripeApiConfig $config, StripeClient $client)
 	{
 		parent::__construct();
 		$this->config = $config;
+		$this->client = $client;
 	}
 
 	/**
@@ -54,6 +59,7 @@ class StripePayButton extends Control
 		$json = $this->presenter->getHttpRequest()->getPost('token');
 		try {
 			$token = Json::decode($json);
+			$this->client->charge($token->id, $this->payment);
 			$this->onSuccess($token);
 			$message = 'OK';
 		} catch (\Exception $ex) {
@@ -111,7 +117,7 @@ class StripePayButton extends Control
 		$template->unsupported = $this->unsupported;
 		$template->type = $this->type;
 		try {
-			$template->payment = $this->payment->getData();
+			$template->payment = $this->payment->getPaymentData();
 
 			if ($this->successUrl === null || $this->errorUrl === null) {
 				throw new InvalidStateException('Success and Error url must be set');

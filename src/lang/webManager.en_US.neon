@@ -2,4 +2,5 @@ web:
     hooks:
         stripeApi:
             title: "Stripe"
-            publishableApiKey: "Public key"
+            publishableApiKey: "Publishable key"
+            secretApiKey: "Secret key"

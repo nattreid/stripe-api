@@ -36,6 +36,9 @@ class StripeApiHook extends HookFactory
 		$form->addText('publishableApiKey', 'webManager.web.hooks.stripeApi.publishableApiKey')
 			->setDefaultValue($this->configurator->stripeApi->publishableApiKey);
 
+		$form->addText('secretApiKey', 'webManager.web.hooks.stripeApi.secretApiKey')
+			->setDefaultValue($this->configurator->stripeApi->secretApiKey);
+
 		$form->addSubmit('save', 'form.save');
 
 		$form->onSuccess[] = [$this, 'stripeApiFormSucceeded'];
@@ -48,6 +51,7 @@ class StripeApiHook extends HookFactory
 		$config = $this->configurator->stripeApi;
 
 		$config->publishableApiKey = $values->publishableApiKey ?: null;
+		$config->secretApiKey = $values->secretApiKey ?: null;
 
 		$this->configurator->stripeApi = $config;
 

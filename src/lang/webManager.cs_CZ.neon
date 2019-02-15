@@ -3,3 +3,4 @@ web:
         stripeApi:
             title: "Stripe"
             publishableApiKey: "Veřejný klíč"
+            secretApiKey: "Tajný klíč"
