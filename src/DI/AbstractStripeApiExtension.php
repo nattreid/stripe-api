@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\DI;
 
 use NAttreid\StripeApi\Control\IStripePayButtonFactory;
+use NAttreid\StripeApi\Control\IStripePaymentFactory;
 use NAttreid\StripeApi\Control\StripePayButton;
+use NAttreid\StripeApi\Control\StripePayment;
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
 use NAttreid\StripeApi\StripeClient;
 use Nette\DI\CompilerExtension;
@@ -33,9 +35,14 @@ class AbstractStripeApiExtension extends CompilerExtension
 			->setType(StripeClient::class)
 			->setArguments([$stripeApi]);
 
-		$builder->addDefinition($this->prefix('control'))
+		$builder->addDefinition($this->prefix('payButton'))
 			->setImplement(IStripePayButtonFactory::class)
 			->setFactory(StripePayButton::class)
+			->setArguments([$stripeApi]);
+
+		$builder->addDefinition($this->prefix('payment'))
+			->setImplement(IStripePaymentFactory::class)
+			->setFactory(StripePayment::class)
 			->setArguments([$stripeApi]);
 	}
 
