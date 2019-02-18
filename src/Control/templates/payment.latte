@@ -1,0 +1,15 @@
+{if $key}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe({$key});
+
+        var source = {$payment};
+        source.redirect = {
+            return_url: {link authorize}
+        };
+        stripe.createSource(source)
+            .then(function (result) {
+                console.log(result);
+            });
+    </script>
+{/if}

@@ -13,11 +13,14 @@ stripeApi:
 /** @var \NAttreid\StripeApi\Control\IStripePayButtonFactory @inject */
 public $payButtonFactory;
 
+/** @var \NAttreid\StripeApi\Control\IStripePaymentFactory @inject */
+public $paymentFactory;
+
 protected function createComponentButton()
 {
     $control = $this->payButtonFactory->create();
 
-    $payment = new PaymentRequest();
+    $payment = new \NAttreid\StripeApi\Helpers\PaymentRequest();
     $payment->setCurrency('usd');
     $payment->setCountry('US');
     $payment->setPrice(1000);
@@ -30,7 +33,7 @@ protected function createComponentButton()
     $control->setSuccessUrl('/success');
     $control->setErrorUrl('/error');
 
-    $control->onSuccess[] = function ($token) {
+    $control->onSuccess[] = function ($charge) {
         
     };
 
@@ -40,8 +43,36 @@ protected function createComponentButton()
 
     return $control;
 }
+
+protected function createComponentPayment()
+{
+    $control = $this->paymentFactory->create();
+
+    $payment = new \NAttreid\StripeApi\Helpers\Payments\Giropay();
+    $payment->setCurrency('eur');
+    $payment->setOrderId(5555);
+    $payment->setOwner('Testing Name');
+    $payment->setPrice(200);
+
+    $control->setPayment($payment);
+
+    $control->setSuccessUrl($this->presenter->link('/success'));
+    $control->setErrorUrl($this->presenter->link('/error'));
+
+    $control->onSuccess[] = function ($charge) {
+
+    };
+
+    $control->onError[] = function (\Exception $exception) {
+       
+    };
+
+    return $control;
+}
 ```
 
 ```latte
-{control bPayment, 'Pay', [class => button]}
+{control button, 'Pay', [class => button]}
+
+{control payment}
 ```
