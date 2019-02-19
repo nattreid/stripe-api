@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\Control;
 
 use NAttreid\StripeApi\Helpers\StripeException;
-use Nette\Http\IResponse;
-use Nette\Http\Response;
+use Nette\Http\SessionSection;
 use Nette\Utils\Json;
-use Tracy\Debugger;
 
 /**
  * Class StripePayment
@@ -17,25 +15,67 @@ use Tracy\Debugger;
  */
 class StripePayment extends AbstractControl
 {
+	private function getSession(): SessionSection
+	{
+		return $this->presenter->getSession('nattreid/stripe');
+	}
+
 	public function handleAuthorize(): void
 	{
-		$response = new Response();
+		$session = $this->getSession();
+
+		$json = $this->presenter->request->getParameter('json');
+
 		try {
-			$input = @file_get_contents('php://input');
-			$json = Json::decode($input);
-			Debugger::barDump($json);
-			if ($json->source === 'chargeable') {
-				$charge = $this->charge($json->source);
-				$this->onSuccess($charge);
-				$response->setCode(IResponse::S200_OK);
+			$source = Json::decode($json);
+			$session->source = $source->id;
+			$session->client_secret = $source->client_secret;
+			$session->livemode = $source->livemode;
+
+			$message = 'OK';
+		} catch (\Exception $ex) {
+			$this->onError($ex);
+			$message = 'ERROR';
+		}
+
+		$this->presenter->payload->message = $message;
+		$this->presenter->sendPayload();
+	}
+
+	public function handleCharge(): void
+	{
+		$session = $this->getSession();
+
+		$client_secret = $this->presenter->request->getParameter('client_secret');
+		$livemode = $this->presenter->request->getParameter('livemode');
+		$source = $this->presenter->request->getParameter('source');
+
+		try {
+			if (
+				$session->source === $source &&
+				$session->client_secret === $client_secret &&
+				$session->livemode === ($livemode === 'true')
+			) {
+				$session->remove();
+
+				$charge = $this->charge($source);
+
+				switch ($charge->status) {
+					default:
+						throw new StripeException('Charge status: ' . $charge->status);
+					case 'succeeded':
+						$this->onSuccess($charge);
+						$url = $this->successUrl;
+
+				}
 			} else {
-				throw new StripeException('Charge status: ' . $json->source);
+				throw new StripeException('Incorrect credentials');
 			}
 		} catch (\Exception $ex) {
 			$this->onError($ex);
-			$response->setCode(IResponse::S500_INTERNAL_SERVER_ERROR);
+			$url = $this->errorUrl;
 		}
-		$this->sendResponse($response);
+		$this->presenter->redirectUrl($url);
 	}
 
 	/**
@@ -45,7 +85,7 @@ class StripePayment extends AbstractControl
 	{
 		$template = $this->template;
 
-		$template->setFile(__DIR__ . '/templates/payment.latte.latte');
+		$template->setFile(__DIR__ . '/templates/payment.latte');
 		parent::render();
 	}
 }

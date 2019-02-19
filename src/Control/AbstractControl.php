@@ -29,10 +29,10 @@ class AbstractControl extends Control
 	private $client;
 
 	/** @var string */
-	private $successUrl;
+	protected $successUrl;
 
 	/** @var string */
-	private $errorUrl;
+	protected $errorUrl;
 
 	/** @var AbstractPayment */
 	private $payment;

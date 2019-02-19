@@ -3,47 +3,49 @@
     <div id="stripePaymentButton"></div>
     <div id="stripePaymentButtonUnsupported" style="display: none;">{$unsupported}</div>
     <script>
-        var stripe = Stripe({$key});
+        window.onload = function () {
+            var stripe = Stripe({$key});
 
-        var paymentRequest = stripe.paymentRequest({$payment});
+            var paymentRequest = stripe.paymentRequest({$payment});
 
-        var elements = stripe.elements();
-        var prButton = elements.create('paymentRequestButton', {
-            paymentRequest: paymentRequest
-        });
-
-        paymentRequest.canMakePayment().then(function (result) {
-            if (result) {
-                var type = {$type};
-                if (
-                    type === null ||
-                    type === 'apple' && result.applePay ||
-                    type === 'paymentRequest' && !result.applePay
-                ) {
-                    prButton.mount('#stripePaymentButton');
-                }
-                return;
-            }
-            $('#stripePaymentButton').css('display', 'none');
-            $('#stripePaymentButtonUnsupported').css('display', 'block');
-        });
-
-        paymentRequest.on('token', function (ev) {
-            $.ajax({
-                url: {link receiveToken},
-                type: 'POST',
-                data: {
-                    token: JSON.stringify(ev.token)
-                }
-            }).done(function (payload) {
-                if (payload.message === 'OK') {
-                    ev.complete('success');
-                    document.location.href = {$successUrl}
-                } else {
-                    ev.complete('fail');
-                    document.location.href = {$errorUrl}
-                }
+            var elements = stripe.elements();
+            var prButton = elements.create('paymentRequestButton', {
+                paymentRequest: paymentRequest
             });
-        });
+
+            paymentRequest.canMakePayment().then(function (result) {
+                if (result) {
+                    var type = {$type};
+                    if (
+                        type === null ||
+                        type === 'apple' && result.applePay ||
+                        type === 'paymentRequest' && !result.applePay
+                    ) {
+                        prButton.mount('#stripePaymentButton');
+                    }
+                    return;
+                }
+                $('#stripePaymentButton').css('display', 'none');
+                $('#stripePaymentButtonUnsupported').css('display', 'block');
+            });
+
+            paymentRequest.on('token', function (ev) {
+                $.ajax({
+                    url: {link receiveToken},
+                    type: 'POST',
+                    data: {
+                        token: JSON.stringify(ev.token)
+                    }
+                }).done(function (payload) {
+                    if (payload.message === 'OK') {
+                        ev.complete('success');
+                        document.location.href = {$successUrl};
+                    } else {
+                        ev.complete('fail');
+                        document.location.href = {$errorUrl};
+                    }
+                });
+            });
+        };
     </script>
 {/if}

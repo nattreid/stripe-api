@@ -27,7 +27,7 @@ class StripePayButton extends AbstractControl
 	 */
 	public function handleReceiveToken(): void
 	{
-		$json = $this->presenter->getHttpRequest()->getPost('token');
+		$json = $this->presenter->request->getPost('token');
 		try {
 			$token = Json::decode($json);
 			$charge = $this->charge($token->id);
