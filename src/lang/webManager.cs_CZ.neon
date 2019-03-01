@@ -4,3 +4,5 @@ web:
             title: "Stripe"
             publishableApiKey: "Veřejný klíč"
             secretApiKey: "Tajný klíč"
+            registerApplePayDomain: "Registrace domény pro ApplePay"
+            applePayDomainRegistered: "Doména registrována"

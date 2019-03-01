@@ -6,7 +6,9 @@ namespace NAttreid\StripeApi;
 
 use NAttreid\StripeApi\Helpers\AbstractPayment;
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
+use Nette\Http\Request;
 use Stripe\ApiResource;
+use Stripe\ApplePayDomain;
 use Stripe\Charge;
 use Stripe\Stripe;
 
@@ -17,13 +19,42 @@ use Stripe\Stripe;
  */
 class StripeClient
 {
+	private const REGISTERED = 'applePayDomainRegistered';
+
+	/** @var string */
+	private $tempDir;
+
 	/** @var StripeApiConfig */
 	private $config;
 
-	public function __construct(StripeApiConfig $config)
+	/** @var Request */
+	private $request;
+
+	public function __construct(string $tempDir, StripeApiConfig $config, Request $request)
 	{
+		$this->tempDir = $tempDir;
 		$this->config = $config;
+		$this->request = $request;
 		Stripe::setApiKey($config->secretApiKey);
+	}
+
+	public function isApplePayDomainRegistered(): bool
+	{
+		return file_exists($this->tempDir . DIRECTORY_SEPARATOR . self::REGISTERED);
+	}
+
+	public function registerApplePayDomain(string $domain = null): ApiResource
+	{
+		if ($domain === null) {
+			$domain = $this->request->getUrl()->getDomain(3);
+		}
+		$response = ApplePayDomain::create([
+			'domain_name' => $domain
+		]);
+
+		@file_put_contents($this->tempDir . DIRECTORY_SEPARATOR . self::REGISTERED, $domain);
+
+		return $response;
 	}
 
 	public function charge(string $source, AbstractPayment $payment): ApiResource

@@ -4,3 +4,5 @@ web:
             title: "Stripe"
             publishableApiKey: "Publishable key"
             secretApiKey: "Secret key"
+            registerApplePayDomain: "Register domain to ApplePay"
+            applePayDomainRegistered: "Domain registered"

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace NAttreid\StripeApi\Hooks;
 
-use NAttreid\Form\Form;
+use NAttreid\StripeApi\StripeClient;
 use NAttreid\WebManager\Services\Hooks\HookFactory;
 use Nette\ComponentModel\Component;
-use Nette\Utils\ArrayHash;
+use Nette\Forms\Controls\SubmitButton;
 
 /**
  * Class StripeApiHook
@@ -20,6 +20,14 @@ class StripeApiHook extends HookFactory
 	/** @var IConfigurator */
 	protected $configurator;
 
+	/** @var StripeClient */
+	private $client;
+
+	public function setDependency(StripeClient $client): void
+	{
+		$this->client = $client;
+	}
+
 	public function init(): void
 	{
 		if (!$this->configurator->stripeApi) {
@@ -31,7 +39,6 @@ class StripeApiHook extends HookFactory
 	public function create(): Component
 	{
 		$form = $this->formFactory->create();
-		$form->setAjaxRequest();
 
 		$form->addText('publishableApiKey', 'webManager.web.hooks.stripeApi.publishableApiKey')
 			->setDefaultValue($this->configurator->stripeApi->publishableApiKey);
@@ -39,15 +46,23 @@ class StripeApiHook extends HookFactory
 		$form->addText('secretApiKey', 'webManager.web.hooks.stripeApi.secretApiKey')
 			->setDefaultValue($this->configurator->stripeApi->secretApiKey);
 
-		$form->addSubmit('save', 'form.save');
+		$form->addText('secretApiKey', 'webManager.web.hooks.stripeApi.appleDomainAssocFile')
+			->setDefaultValue($this->configurator->stripeApi->secretApiKey);
 
-		$form->onSuccess[] = [$this, 'stripeApiFormSucceeded'];
+		$form->addSubmit('save', 'form.save')
+			->onClick[] = [$this, 'stripeApiSave'];
+
+		$form->addSubmit('register', 'webManager.web.hooks.stripeApi.registerApplePayDomain')
+			->setDisabled($this->client->isApplePayDomainRegistered())
+			->onClick[] = [$this, 'registerApplePayDomain'];
 
 		return $form;
 	}
 
-	public function stripeApiFormSucceeded(Form $form, ArrayHash $values): void
+	public function stripeApiSave(SubmitButton $button): void
 	{
+		$values = $button->form->values;
+
 		$config = $this->configurator->stripeApi;
 
 		$config->publishableApiKey = $values->publishableApiKey ?: null;
@@ -57,4 +72,14 @@ class StripeApiHook extends HookFactory
 
 		$this->flashNotifier->success('default.dataSaved');
 	}
+
+	public function registerApplePayDomain(): void
+	{
+		$this->client->registerApplePayDomain();
+		$this->flashNotifier->success('webManager.web.hooks.stripeApi.applePayDomainRegistered');
+
+		$this->onDataChange();
+	}
+
+
 }

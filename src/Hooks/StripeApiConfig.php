@@ -11,6 +11,7 @@ use Nette\SmartObject;
  *
  * @property string|null $publishableApiKey Publish API key
  * @property string|null $secretApiKey Secret API key
+ * @property string|null $appleDomainAssocFile Domain association file content
  *
  * @author Attreid <attreid@gmail.com>
  */
@@ -23,6 +24,9 @@ class StripeApiConfig
 
 	/** @var string|null */
 	private $secretApiKey;
+
+	/** @var string|null */
+	private $appleDomainAssocFile;
 
 	protected function getPublishableApiKey(): ?string
 	{
@@ -39,8 +43,18 @@ class StripeApiConfig
 		return $this->secretApiKey;
 	}
 
-	public function setSecretApiKey(?string $secretApiKey): void
+	protected function setSecretApiKey(?string $secretApiKey): void
 	{
 		$this->secretApiKey = $secretApiKey;
+	}
+
+	protected function getAppleDomainAssocFile(): ?string
+	{
+		return $this->appleDomainAssocFile;
+	}
+
+	protected function setAppleDomainAssocFile(?string $appleDomainAssocFile): void
+	{
+		$this->appleDomainAssocFile = $appleDomainAssocFile;
 	}
 }

@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace NAttreid\StripeApi\DI;
 
+use NAttreid\Routing\RouterFactory;
 use NAttreid\StripeApi\Control\IStripePayButtonFactory;
 use NAttreid\StripeApi\Control\IStripePaymentFactory;
 use NAttreid\StripeApi\Control\StripePayButton;
 use NAttreid\StripeApi\Control\StripePayment;
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
+use NAttreid\StripeApi\Hooks\StripeApiHook;
+use NAttreid\StripeApi\Routing\Router;
 use NAttreid\StripeApi\StripeClient;
 use Nette\DI\CompilerExtension;
+use Nette\DI\Helpers;
+use Nette\DI\MissingServiceException;
 
 /**
  * Class AbstractStripeApiExtension
@@ -22,6 +27,8 @@ class AbstractStripeApiExtension extends CompilerExtension
 	private $defaults = [
 		'publishableApiKey' => null,
 		'secretApiKey' => null,
+		'appleDomainAssocFile' => null,
+		'tempDir' => '%tempDir%'
 	];
 
 	public function loadConfiguration(): void
@@ -29,11 +36,13 @@ class AbstractStripeApiExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$config = $this->validateConfig($this->defaults, $this->getConfig());
 
+		$config['tempDir'] = Helpers::expand($config['tempDir'], $builder->parameters);
+
 		$stripeApi = $this->prepareConfig($config);
 
 		$builder->addDefinition($this->prefix('client'))
 			->setType(StripeClient::class)
-			->setArguments([$stripeApi]);
+			->setArguments([$config['tempDir'], $stripeApi]);
 
 		$builder->addDefinition($this->prefix('payButton'))
 			->setImplement(IStripePayButtonFactory::class)
@@ -44,6 +53,35 @@ class AbstractStripeApiExtension extends CompilerExtension
 			->setImplement(IStripePaymentFactory::class)
 			->setFactory(StripePayment::class)
 			->setArguments([$stripeApi]);
+
+		$builder->addDefinition($this->prefix('router'))
+			->setType(Router::class);
+	}
+
+	public function beforeCompile(): void
+	{
+		$builder = $this->getContainerBuilder();
+
+		$router = $builder->getByType(RouterFactory::class);
+		try {
+			$builder->getDefinition($router)
+				->addSetup('addRouter', ['@' . $this->prefix('router'), RouterFactory::PRIORITY_APP]);
+
+			$builder->getDefinition('application.presenterFactory')
+				->addSetup('setMapping', [
+					['Stripe' => 'NAttreid\AppManager\Control\*Presenter']
+				]);
+		} catch (MissingServiceException $ex) {
+		}
+
+		$hook = $builder->getByType(StripeApiHook::class);
+		try {
+			$builder->getDefinition($hook)
+				->addSetup('setDependency', [
+					'@' . $this->prefix('client'),
+				]);
+		} catch (MissingServiceException $ex) {
+		}
 	}
 
 	protected function prepareConfig(array $config)
@@ -52,6 +90,7 @@ class AbstractStripeApiExtension extends CompilerExtension
 		return $builder->addDefinition($this->prefix('config'))
 			->setFactory(StripeApiConfig::class)
 			->addSetup('$publishableApiKey', [$config['publishableApiKey']])
-			->addSetup('$secretApiKey', [$config['secretApiKey']]);
+			->addSetup('$secretApiKey', [$config['secretApiKey']])
+			->addSetup('$appleDomainAssocFile', [$config['appleDomainAssocFile']]);
 	}
 }
