@@ -6,3 +6,4 @@ web:
             secretApiKey: "Tajný klíč"
             registerApplePayDomain: "Registrace domény pro ApplePay"
             applePayDomainRegistered: "Doména registrována"
+            appleDomainAssocFile: "apple-developer-merchantid-domain-association"

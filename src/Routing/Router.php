@@ -18,7 +18,7 @@ class Router extends \NAttreid\Routing\Router
 	{
 		$router = $this->getRouter();
 
-		$router[] = new Route('.well-known/apple-developer-merchantid-domain-association', 'Stripe:Apple:domain');
+		$router[] = new Route('.well-known/apple-developer-merchantid-domain-association', 'StripeApi:Stripe:appleDomain');
 	}
 
 }

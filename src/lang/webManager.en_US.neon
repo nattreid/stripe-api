@@ -6,3 +6,4 @@ web:
             secretApiKey: "Secret key"
             registerApplePayDomain: "Register domain to ApplePay"
             applePayDomainRegistered: "Domain registered"
+            appleDomainAssocFile: "apple-developer-merchantid-domain-association"

@@ -11,6 +11,7 @@ use NAttreid\StripeApi\Control\StripePayButton;
 use NAttreid\StripeApi\Control\StripePayment;
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
 use NAttreid\StripeApi\Hooks\StripeApiHook;
+use NAttreid\StripeApi\Presenters\StripePresenter;
 use NAttreid\StripeApi\Routing\Router;
 use NAttreid\StripeApi\StripeClient;
 use Nette\DI\CompilerExtension;
@@ -56,26 +57,27 @@ class AbstractStripeApiExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('router'))
 			->setType(Router::class);
+
+		$builder->addDefinition($this->prefix('presenter'))
+			->setType(StripePresenter::class)
+			->addSetup('setConfig', [$stripeApi]);
 	}
 
 	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();
 
-		$router = $builder->getByType(RouterFactory::class);
 		try {
+			$router = $builder->getByType(RouterFactory::class);
 			$builder->getDefinition($router)
 				->addSetup('addRouter', ['@' . $this->prefix('router'), RouterFactory::PRIORITY_APP]);
 
 			$builder->getDefinition('application.presenterFactory')
 				->addSetup('setMapping', [
-					['Stripe' => 'NAttreid\AppManager\Control\*Presenter']
+					['StripeApi' => 'NAttreid\StripeApi\Presenters\*Presenter']
 				]);
-		} catch (MissingServiceException $ex) {
-		}
 
-		$hook = $builder->getByType(StripeApiHook::class);
-		try {
+			$hook = $builder->getByType(StripeApiHook::class);
 			$builder->getDefinition($hook)
 				->addSetup('setDependency', [
 					'@' . $this->prefix('client'),

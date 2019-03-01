@@ -46,8 +46,8 @@ class StripeApiHook extends HookFactory
 		$form->addText('secretApiKey', 'webManager.web.hooks.stripeApi.secretApiKey')
 			->setDefaultValue($this->configurator->stripeApi->secretApiKey);
 
-		$form->addText('secretApiKey', 'webManager.web.hooks.stripeApi.appleDomainAssocFile')
-			->setDefaultValue($this->configurator->stripeApi->secretApiKey);
+		$form->addText('appleDomainAssocFile', 'webManager.web.hooks.stripeApi.appleDomainAssocFile')
+			->setDefaultValue($this->configurator->stripeApi->appleDomainAssocFile);
 
 		$form->addSubmit('save', 'form.save')
 			->onClick[] = [$this, 'stripeApiSave'];
@@ -67,6 +67,7 @@ class StripeApiHook extends HookFactory
 
 		$config->publishableApiKey = $values->publishableApiKey ?: null;
 		$config->secretApiKey = $values->secretApiKey ?: null;
+		$config->appleDomainAssocFile = $values->appleDomainAssocFile ?: null;
 
 		$this->configurator->stripeApi = $config;
 

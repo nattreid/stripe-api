@@ -18,16 +18,17 @@ class StripePresenter extends Presenter
 	/** @var StripeApiConfig */
 	private $config;
 
-	public function __construct(StripeApiConfig $config)
+	public function setConfig(StripeApiConfig $config)
 	{
-		parent::__construct();
 		$this->config = $config;
 	}
 
-	public function renderDomain(): void
+	public function renderAppleDomain(): void
 	{
 		if ($this->config->appleDomainAssocFile !== null) {
-			$this->sendResponse(new TextResponse($this->config->appleDomainAssocFile));
+			header('Content-Type: text/plain');
+			echo $this->config->appleDomainAssocFile;
+			$this->terminate();
 		} else {
 			$this->error();
 		}
