@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\Presenters;
 
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
-use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
 
 /**
