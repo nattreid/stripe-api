@@ -10,17 +10,20 @@ stripeApi:
 
 ### Použití
 ```php
-/** @var \NAttreid\StripeApi\Control\IStripePayButtonFactory @inject */
+/** @var \NAttreid\StripeApi\Control\IPayButtonFactory @inject */
 public $payButtonFactory;
 
-/** @var \NAttreid\StripeApi\Control\IStripePaymentFactory @inject */
+/** @var \NAttreid\StripeApi\Control\IPaymentFactory @inject */
 public $paymentFactory;
+
+/** @var \NAttreid\StripeApi\Control\IMasterPassButtonFactory @inject */
+public $masterpassFactory;
 
 protected function createComponentButton()
 {
     $control = $this->payButtonFactory->create();
 
-    $payment = new \NAttreid\StripeApi\Helpers\PaymentRequest();
+    $payment = new \NAttreid\StripeApi\Helpers\Payments\PaymentRequest();
     $payment->setCurrency('usd');
     $payment->setCountry('US');
     $payment->setPrice(1000);
@@ -56,8 +59,33 @@ protected function createComponentPayment()
 
     $control->setPayment($payment);
 
-    $control->setSuccessUrl($this->presenter->link('/success'));
-    $control->setErrorUrl($this->presenter->link('/error'));
+    $control->setSuccessUrl('/success');
+    $control->setErrorUrl('/error');
+
+    $control->onSuccess[] = function ($charge) {
+
+    };
+
+    $control->onError[] = function (\Exception $exception) {
+       
+    };
+
+    return $control;
+}
+
+protected function createComponentMasterpass()
+{
+    $control = $this->masterpassFactory->create();
+
+    $payment = new \NAttreid\StripeApi\Helpers\Payments\Masterpass();
+    $payment->setCurrency('eur');
+    $payment->setCartId('xxXXXxXXxXXXXxx');
+    $payment->setPrice(200);
+
+    $control->setPayment($payment);
+
+    $control->setSuccessUrl('/success');
+    $control->setErrorUrl('/error');
 
     $control->onSuccess[] = function ($charge) {
 
@@ -75,4 +103,6 @@ protected function createComponentPayment()
 {control button, 'Pay', [class => button]}
 
 {control payment}
+
+{control masterpass}
 ```

@@ -9,11 +9,11 @@ use Nette\Application\AbortException;
 use Nette\Utils\Json;
 
 /**
- * Class StripePayButton
+ * Class PayButton
  *
  * @author Attreid <attreid@gmail.com>
  */
-class StripePayButton extends AbstractControl
+class PayButton extends AbstractControl
 {
 
 	/** @var string */
@@ -81,7 +81,7 @@ class StripePayButton extends AbstractControl
 	}
 }
 
-interface IStripePayButtonFactory
+interface IPayButtonFactory
 {
-	public function create(): StripePayButton;
+	public function create(): PayButton;
 }

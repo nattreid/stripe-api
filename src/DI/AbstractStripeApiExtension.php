@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\DI;
 
 use NAttreid\Routing\RouterFactory;
-use NAttreid\StripeApi\Control\IStripePayButtonFactory;
-use NAttreid\StripeApi\Control\IStripePaymentFactory;
-use NAttreid\StripeApi\Control\StripePayButton;
-use NAttreid\StripeApi\Control\StripePayment;
+use NAttreid\StripeApi\Control\IMasterPassButtonFactory;
+use NAttreid\StripeApi\Control\IPayButtonFactory;
+use NAttreid\StripeApi\Control\IPaymentFactory;
+use NAttreid\StripeApi\Control\MasterPassButton;
+use NAttreid\StripeApi\Control\PayButton;
+use NAttreid\StripeApi\Control\Payment;
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
 use NAttreid\StripeApi\Hooks\StripeApiHook;
 use NAttreid\StripeApi\Presenters\StripePresenter;
@@ -29,6 +31,7 @@ class AbstractStripeApiExtension extends CompilerExtension
 		'publishableApiKey' => null,
 		'secretApiKey' => null,
 		'appleDomainAssocFile' => null,
+		'debug' => false,
 		'tempDir' => '%tempDir%'
 	];
 
@@ -46,14 +49,19 @@ class AbstractStripeApiExtension extends CompilerExtension
 			->setArguments([$config['tempDir'], $stripeApi]);
 
 		$builder->addDefinition($this->prefix('payButton'))
-			->setImplement(IStripePayButtonFactory::class)
-			->setFactory(StripePayButton::class)
-			->setArguments([$stripeApi]);
+			->setImplement(IPayButtonFactory::class)
+			->setFactory(PayButton::class)
+			->setArguments([$config['debug'], $stripeApi]);
 
 		$builder->addDefinition($this->prefix('payment'))
-			->setImplement(IStripePaymentFactory::class)
-			->setFactory(StripePayment::class)
-			->setArguments([$stripeApi]);
+			->setImplement(IPaymentFactory::class)
+			->setFactory(Payment::class)
+			->setArguments([$config['debug'], $stripeApi]);
+
+		$builder->addDefinition($this->prefix('masterPassButton'))
+			->setImplement(IMasterPassButtonFactory::class)
+			->setFactory(MasterPassButton::class)
+			->setArguments([$config['debug'], $stripeApi]);
 
 		$builder->addDefinition($this->prefix('router'))
 			->setType(Router::class);

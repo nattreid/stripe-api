@@ -1,0 +1,17 @@
+{if $masterPassCheckoutId}
+    <script type="text/javascript" src="{$url}"></script>
+
+    <img id="masterpassButton" src="https://static.masterpass.com/dyn/img/btn/global/mp_chk_btn_147x034px.svg"/>
+
+    <script>
+        var button = document.getElementById("masterpassButton");
+
+        button.addEventListener("click", function () {
+            var payment = {$payment};
+            payment.checkoutId = {$masterPassCheckoutId};
+            payment.callbackUrl = {link //charge};
+
+            masterpass.checkout(payment);
+        });
+    </script>
+{/if}

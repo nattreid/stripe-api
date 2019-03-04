@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\Presenters;
 
 use NAttreid\StripeApi\Hooks\StripeApiConfig;
+use Nette\Application\AbortException;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Presenter;
 
 /**
@@ -22,6 +24,10 @@ class StripePresenter extends Presenter
 		$this->config = $config;
 	}
 
+	/**
+	 * @throws AbortException
+	 * @throws BadRequestException
+	 */
 	public function renderAppleDomain(): void
 	{
 		if ($this->config->appleDomainAssocFile !== null) {

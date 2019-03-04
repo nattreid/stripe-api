@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace NAttreid\StripeApi\Helpers;
+namespace NAttreid\StripeApi\Helpers\Payments;
 
+use NAttreid\StripeApi\Helpers\AbstractPayment;
 use Nette\InvalidStateException;
 
 /**

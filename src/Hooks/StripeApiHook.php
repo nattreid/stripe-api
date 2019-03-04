@@ -46,6 +46,9 @@ class StripeApiHook extends HookFactory
 		$form->addText('secretApiKey', 'webManager.web.hooks.stripeApi.secretApiKey')
 			->setDefaultValue($this->configurator->stripeApi->secretApiKey);
 
+		$form->addText('masterPassCheckoutId', 'webManager.web.hooks.stripeApi.masterPassCheckoutId')
+			->setDefaultValue($this->configurator->stripeApi->masterPassCheckoutId);
+
 		$form->addText('appleDomainAssocFile', 'webManager.web.hooks.stripeApi.appleDomainAssocFile')
 			->setDefaultValue($this->configurator->stripeApi->appleDomainAssocFile);
 
@@ -67,6 +70,7 @@ class StripeApiHook extends HookFactory
 
 		$config->publishableApiKey = $values->publishableApiKey ?: null;
 		$config->secretApiKey = $values->secretApiKey ?: null;
+		$config->masterPassCheckoutId = $values->masterPassCheckoutId ?: null;
 		$config->appleDomainAssocFile = $values->appleDomainAssocFile ?: null;
 
 		$this->configurator->stripeApi = $config;

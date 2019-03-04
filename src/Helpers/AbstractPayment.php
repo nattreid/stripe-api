@@ -59,6 +59,11 @@ abstract class AbstractPayment
 
 	public abstract function getPaymentData(): array;
 
+	public function getSource(string $verifier): array
+	{
+		return [];
+	}
+
 	public function getChargeData(): array
 	{
 		list($currency, $amount) = $this->checkAmount();

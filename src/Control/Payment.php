@@ -5,21 +5,25 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\Control;
 
 use NAttreid\StripeApi\Helpers\StripeException;
+use Nette\Application\AbortException;
 use Nette\Http\SessionSection;
 use Nette\Utils\Json;
 
 /**
- * Class StripePayment
+ * Class Payment
  *
  * @author Attreid <attreid@gmail.com>
  */
-class StripePayment extends AbstractControl
+class Payment extends AbstractControl
 {
 	private function getSession(): SessionSection
 	{
 		return $this->presenter->getSession('nattreid/stripe');
 	}
 
+	/**
+	 * @throws AbortException
+	 */
 	public function handleAuthorize(): void
 	{
 		$session = $this->getSession();
@@ -42,6 +46,9 @@ class StripePayment extends AbstractControl
 		$this->presenter->sendPayload();
 	}
 
+	/**
+	 * @throws AbortException
+	 */
 	public function handleCharge(): void
 	{
 		$session = $this->getSession();
@@ -90,7 +97,7 @@ class StripePayment extends AbstractControl
 	}
 }
 
-interface IStripePaymentFactory
+interface IPaymentFactory
 {
-	public function create(): StripePayment;
+	public function create(): Payment;
 }

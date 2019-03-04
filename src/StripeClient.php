@@ -10,6 +10,7 @@ use Nette\Http\Request;
 use Stripe\ApiResource;
 use Stripe\ApplePayDomain;
 use Stripe\Charge;
+use Stripe\Source;
 use Stripe\Stripe;
 
 /**
@@ -62,5 +63,10 @@ class StripeClient
 		$data = $payment->getChargeData();
 		$data['source'] = $source;
 		return Charge::create($data);
+	}
+
+	public function createSource(string $verifier, AbstractPayment $payment): ApiResource
+	{
+		return Source::create($payment->getSource($verifier));
 	}
 }

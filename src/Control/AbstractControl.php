@@ -28,6 +28,9 @@ class AbstractControl extends Control
 	/** @var StripeClient */
 	private $client;
 
+	/** @var bool */
+	protected $debug;
+
 	/** @var string */
 	protected $successUrl;
 
@@ -37,9 +40,10 @@ class AbstractControl extends Control
 	/** @var AbstractPayment */
 	private $payment;
 
-	public function __construct(StripeApiConfig $config, StripeClient $client)
+	public function __construct(bool $debug, StripeApiConfig $config, StripeClient $client)
 	{
 		parent::__construct();
+		$this->debug = $debug;
 		$this->config = $config;
 		$this->client = $client;
 	}
@@ -62,9 +66,14 @@ class AbstractControl extends Control
 		return $this;
 	}
 
-	protected function charge($source): ApiResource
+	protected function charge(string $source): ApiResource
 	{
 		return $this->client->charge($source, $this->payment);
+	}
+
+	protected function createSource(string $verifier): ApiResource
+	{
+		return $this->client->createSource($verifier, $this->payment);
 	}
 
 	/**
@@ -74,6 +83,7 @@ class AbstractControl extends Control
 	{
 		$template = $this->template;
 		$template->key = $this->config->publishableApiKey;
+		$template->masterPassCheckoutId = $this->config->masterPassCheckoutId;
 
 		try {
 			$template->payment = $this->payment->getPaymentData();
