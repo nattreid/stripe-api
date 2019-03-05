@@ -49,7 +49,7 @@ class Masterpass extends AbstractPayment
 
 		return [
 			'allowedCardTypes' => ['master, amex, visa'],
-			'amount' => $amount,
+			'amount' => (string) $amount,
 			'currency' => $currency,
 			'cartId' => $this->cartId
 		];

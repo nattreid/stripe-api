@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace NAttreid\StripeApi\Control;
 
+use InvalidArgumentException;
+use NAttreid\StripeApi\Helpers\AbstractPayment;
+use NAttreid\StripeApi\Helpers\Payments\Masterpass;
 use NAttreid\StripeApi\Helpers\StripeException;
 use Nette\Application\AbortException;
 
@@ -17,6 +20,14 @@ class MasterPassButton extends AbstractControl
 	private const
 		SANDBOX_URL = 'https://sandbox.masterpass.com/integration/merchant.js',
 		PRODUCTION_URL = 'https://masterpass.com/integration/merchant.js';
+
+	public function setPayment(AbstractPayment $payment): AbstractControl
+	{
+		if (!$payment instanceof Masterpass) {
+			throw new InvalidArgumentException("Payment must be 'Masterpass' class");
+		}
+		return parent::setPayment($payment);
+	}
 
 	/**
 	 * @throws AbortException

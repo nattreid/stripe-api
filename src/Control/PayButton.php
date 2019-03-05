@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace NAttreid\StripeApi\Control;
 
+use InvalidArgumentException;
+use NAttreid\StripeApi\Helpers\AbstractPayment;
+use NAttreid\StripeApi\Helpers\Payments\PaymentRequest;
 use NAttreid\StripeApi\Helpers\StripeException;
 use Nette\Application\AbortException;
 use Nette\Utils\Json;
@@ -64,6 +67,14 @@ class PayButton extends AbstractControl
 	{
 		$this->unsupported = $text;
 		return $this;
+	}
+
+	public function setPayment(AbstractPayment $payment): AbstractControl
+	{
+		if (!$payment instanceof PaymentRequest) {
+			throw new InvalidArgumentException("Payment must be 'PaymentRequest' class");
+		}
+		return parent::setPayment($payment);
 	}
 
 	/**

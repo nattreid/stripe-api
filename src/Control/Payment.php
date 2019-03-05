@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace NAttreid\StripeApi\Control;
 
+use InvalidArgumentException;
+use NAttreid\StripeApi\Helpers\AbstractPayment;
 use NAttreid\StripeApi\Helpers\StripeException;
 use Nette\Application\AbortException;
 use Nette\Http\SessionSection;
@@ -19,6 +21,14 @@ class Payment extends AbstractControl
 	private function getSession(): SessionSection
 	{
 		return $this->presenter->getSession('nattreid/stripe');
+	}
+
+	public function setPayment(AbstractPayment $payment): AbstractControl
+	{
+		if (!$payment instanceof \NAttreid\StripeApi\Helpers\Payment) {
+			throw new InvalidArgumentException("Payment must be '\NAttreid\StripeApi\Helpers\Payment' class");
+		}
+		return parent::setPayment($payment);
 	}
 
 	/**

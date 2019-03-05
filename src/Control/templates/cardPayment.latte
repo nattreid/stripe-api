@@ -1,0 +1,14 @@
+{if $key}
+    <form action="{link charge}" method="post">
+        <script
+                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                data-key="{$key}"
+                data-amount="{$payment[amount]}"
+                {*data-name="Lucky Deal Shops LTD."*}
+                data-description="Charge"
+                data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                data-locale="auto"
+                data-currency="{$payment[currency]}">
+        </script>
+    </form>
+{/if}
