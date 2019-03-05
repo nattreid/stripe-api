@@ -40,7 +40,7 @@ class CardElement extends AbstractControl
 	}
 }
 
-interface ICardPaymentFactory
+interface ICardElementFactory
 {
-	public function create(): CardPayment;
+	public function create(): CardElement;
 }
