@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\Helpers\Payments;
 
 use NAttreid\StripeApi\Helpers\AbstractPayment;
+use NAttreid\Utils\Number;
+use NAttreid\Utils\Strings;
 use Nette\InvalidStateException;
 
 /**
@@ -22,6 +24,12 @@ class Masterpass extends AbstractPayment
 	{
 		$this->cartId = $cartId;
 		return $this;
+	}
+
+	protected function checkAmount(): array
+	{
+		parent::checkAmount();
+		return [Strings::upper($this->currency), number_format($this->price, 2)];
 	}
 
 	public function getSource(string $verifier): array
@@ -49,7 +57,7 @@ class Masterpass extends AbstractPayment
 
 		return [
 			'allowedCardTypes' => ['master, amex, visa'],
-			'amount' => (string) $amount,
+			'amount' => $amount,
 			'currency' => $currency,
 			'cartId' => $this->cartId
 		];

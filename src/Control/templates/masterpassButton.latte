@@ -4,14 +4,12 @@
     <img id="masterpassButton" src="https://static.masterpass.com/dyn/img/btn/global/mp_chk_btn_147x034px.svg"/>
 
     <script>
-        var button = document.getElementById("masterpassButton");
+        let payment = {$payment};
+        payment.checkoutId = {$masterPassCheckoutId};
+        payment.callbackUrl = {link //charge};
 
-        button.addEventListener("click", function () {
-            var payment = {$payment};
-            payment.checkoutId = {$masterPassCheckoutId};
-            payment.callbackUrl = {link //charge};
-
-            masterpass.checkout(payment);
-        });
+        let button = document.getElementById("masterpassButton");
+        button.addEventListener("click", ev =>
+            masterpass.checkout(payment));
     </script>
 {/if}

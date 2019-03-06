@@ -16,10 +16,10 @@ abstract class AbstractPayment
 {
 
 	/** @var string */
-	private $currency;
+	protected $currency;
 
 	/** @var float */
-	private $price;
+	protected $price;
 
 	protected function checkAmount(): array
 	{

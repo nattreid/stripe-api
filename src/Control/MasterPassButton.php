@@ -36,24 +36,28 @@ class MasterPassButton extends AbstractControl
 	{
 		$oauth_verifier = $this->presenter->request->getParameter('oauth_verifier');
 
-		try {
-			$source = $this->createSource($oauth_verifier);
-			$charge = $this->charge((string) $source->id);
+		if ($oauth_verifier !== null) {
+			try {
+				$source = $this->createSource($oauth_verifier);
+				$charge = $this->charge((string) $source->id);
 
-			switch ($charge->status) {
-				default:
-					throw new StripeException('Charge status: ' . $charge->status);
-				case 'succeeded':
-					$this->onSuccess($charge);
-					$url = $this->successUrl;
+				switch ($charge->status) {
+					default:
+						throw new StripeException('Charge status: ' . $charge->status);
+					case 'succeeded':
+						$this->onSuccess($charge);
+						$url = $this->successUrl;
 
+				}
+
+			} catch (\Exception $ex) {
+				$this->onError($ex);
+				$url = $this->errorUrl;
 			}
-
-		} catch (\Exception $ex) {
-			$this->onError($ex);
-			$url = $this->errorUrl;
+			$this->presenter->redirectUrl($url);
+		} else {
+			$this->presenter->terminate();
 		}
-		$this->presenter->redirectUrl($url);
 	}
 
 	/**
