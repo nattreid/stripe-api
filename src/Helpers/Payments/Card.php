@@ -13,6 +13,14 @@ use NAttreid\StripeApi\Helpers\AbstractPayment;
  */
 class Card extends AbstractPayment
 {
+	/** @var string */
+	private $email;
+
+	public function setEmail(string $email): self
+	{
+		$this->email = $email;
+		return $this;
+	}
 
 	public function getPaymentData(): array
 	{
@@ -20,7 +28,8 @@ class Card extends AbstractPayment
 
 		return [
 			'amount' => (string) $amount,
-			'currency' => $currency
+			'currency' => $currency,
+			'email' => $this->email,
 		];
 	}
 }

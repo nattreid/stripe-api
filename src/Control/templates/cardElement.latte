@@ -3,6 +3,9 @@
         .StripeElement {
             box-sizing: border-box;
 
+            display: inline-block;
+            min-width: 300px;
+
             height: 40px;
 
             padding: 10px 12px;
@@ -27,23 +30,50 @@
         .StripeElement--webkit-autofill {
             background-color: #fefde5 !important;
         }
+
+        #stripe-card-element button {
+            border: none;
+            border-radius: 4px;
+            outline: none;
+            text-decoration: none;
+            color: #fff;
+            background: #32325d;
+            white-space: nowrap;
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+            padding: 0 14px;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            text-decoration: none;
+            -webkit-transition: all 150ms ease;
+            transition: all 150ms ease;
+            vertical-align: top;
+            cursor: pointer;
+        }
+
+        #stripe-card-element .form-row {
+            display: inline-block;
+        }
     </style>
 
-    <form action="{link charge}" method="post" id="payment-form">
+    <form action="{link charge}" method="post" id="stripe-card-element">
         <div class="form-row">
-            <label for="card-element">
-                Credit or debit card
-            </label>
             <div id="card-element"></div>
             <div id="card-errors" role="alert"></div>
         </div>
-        <button>Submit Payment</button>
+        <button n:attr="(expand)$attrs">{$text}</button>
     </form>
 
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         var stripe = Stripe({$key});
-        var elements = stripe.elements();
+        var elements = stripe.elements({
+            locale: {$locale}
+        });
 
         var style = {
             base: {
@@ -75,7 +105,7 @@
             }
         });
 
-        var form = document.getElementById('payment-form');
+        var form = document.getElementById('stripe-card-element');
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -91,7 +121,7 @@
 
 
         function stripeTokenHandler(token) {
-            var form = document.getElementById('payment-form');
+            var form = document.getElementById('stripe-card-element');
             var hiddenInput = document.createElement('input');
             hiddenInput.setAttribute('type', 'hidden');
             hiddenInput.setAttribute('name', 'stripeToken');

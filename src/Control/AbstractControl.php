@@ -40,6 +40,8 @@ class AbstractControl extends Control
 	/** @var AbstractPayment */
 	private $payment;
 
+	private $locale = 'auto';
+
 	public function __construct(bool $debug, StripeApiConfig $config, StripeClient $client)
 	{
 		parent::__construct();
@@ -57,6 +59,12 @@ class AbstractControl extends Control
 	public function setErrorUrl(string $url): self
 	{
 		$this->errorUrl = $url;
+		return $this;
+	}
+
+	public function setLocale(string $locale): self
+	{
+		$this->locale = $locale;
 		return $this;
 	}
 
@@ -96,6 +104,7 @@ class AbstractControl extends Control
 		}
 		$template->successUrl = $this->successUrl;
 		$template->errorUrl = $this->errorUrl;
+		$template->locale = $this->locale;
 
 		$template->render();
 	}

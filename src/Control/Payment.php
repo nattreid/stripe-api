@@ -38,7 +38,7 @@ class Payment extends AbstractControl
 	{
 		$session = $this->getSession();
 
-		$json = $this->presenter->request->getParameter('json');
+		$json = $this->presenter->getHttpRequest()->getRawBody();
 
 		try {
 			$source = Json::decode($json);
@@ -46,14 +46,13 @@ class Payment extends AbstractControl
 			$session->client_secret = $source->client_secret;
 			$session->livemode = $source->livemode;
 
-			$message = 'OK';
+			http_response_code(200);
 		} catch (\Exception $ex) {
 			$this->onError($ex);
-			$message = 'ERROR';
+			http_response_code(500);
 		}
 
-		$this->presenter->payload->message = $message;
-		$this->presenter->sendPayload();
+		$this->presenter->terminate();
 	}
 
 	/**

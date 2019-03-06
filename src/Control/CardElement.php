@@ -4,38 +4,23 @@ declare(strict_types=1);
 
 namespace NAttreid\StripeApi\Control;
 
-use InvalidArgumentException;
-use NAttreid\StripeApi\Helpers\AbstractPayment;
-use NAttreid\StripeApi\Helpers\Payments\Card;
-use Tracy\Debugger;
-
 /**
  * Class CardElement
  *
  * @author Attreid <attreid@gmail.com>
  */
-class CardElement extends AbstractControl
+class CardElement extends AbstractCard
 {
 
-	public function handleCharge(): void
-	{
-		$data = $this->getParameters();
-		Debugger::barDump($data);
-	}
-
-	public function setPayment(AbstractPayment $payment): AbstractControl
-	{
-		if (!$payment instanceof Card) {
-			throw new InvalidArgumentException("Payment must be 'Card' class");
-		}
-		return parent::setPayment($payment);
-	}
-
-	public function render(): void
+	public function render(string $text = 'Submit Payment', array $attrs = []): void
 	{
 		$template = $this->template;
 
 		$template->setFile(__DIR__ . '/templates/cardElement.latte');
+
+		$template->text = $text;
+		$template->attrs = $attrs;
+
 		parent::render();
 	}
 }

@@ -4,11 +4,15 @@
                 src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                 data-key="{$key}"
                 data-amount="{$payment[amount]}"
-                {*data-name="Lucky Deal Shops LTD."*}
-                data-description="Charge"
+                {if $title}data-name="{$title}"{/if}
+                {if $description}data-description="{$description}"{/if}
+                {if $payment[email]}data-email="{$payment[email]}"{/if}
                 data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-                data-locale="auto"
-                data-currency="{$payment[currency]}">
+                data-locale="{$locale}"
+                data-currency="{$payment[currency]}"
+                data-label="{$text}"
+                data-allow-remember-me="{$allowRemember ? 'true' : 'false'}"
+                data-panel-label="{$text} {l}{l}amount{r}{r}">
         </script>
     </form>
 {/if}

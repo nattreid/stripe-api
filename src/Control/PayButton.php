@@ -9,7 +9,6 @@ use NAttreid\StripeApi\Helpers\AbstractPayment;
 use NAttreid\StripeApi\Helpers\Payments\PaymentRequest;
 use NAttreid\StripeApi\Helpers\StripeException;
 use Nette\Application\AbortException;
-use Nette\Utils\Json;
 
 /**
  * Class PayButton
@@ -28,27 +27,25 @@ class PayButton extends AbstractControl
 	/**
 	 * @throws AbortException
 	 */
-	public function handleReceiveToken(): void
+	public function handleCharge(): void
 	{
-		$json = $this->presenter->request->getPost('token');
+		$token = $this->presenter->request->getPost('token');
 		try {
-			$token = Json::decode($json);
-			$charge = $this->charge($token->id);
+			$charge = $this->charge($token);
 
 			switch ($charge->status) {
 				default:
 					throw new StripeException('Charge status: ' . $charge->status);
 				case 'succeeded':
 					$this->onSuccess($charge);
-					$message = 'OK';
+					http_response_code(200);
 			}
 		} catch (\Exception $ex) {
 			$this->onError($ex);
-			$message = 'ERROR';
+			http_response_code(500);
 		}
 
-		$this->presenter->payload->message = $message;
-		$this->presenter->sendPayload();
+		$this->presenter->terminate();
 	}
 
 	public function setOnlyApplePay(): self

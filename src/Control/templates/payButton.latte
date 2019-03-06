@@ -30,14 +30,13 @@
             });
 
             paymentRequest.on('token', function (ev) {
-                $.ajax({
-                    url: {link receiveToken},
-                    type: 'POST',
-                    data: {
-                        token: JSON.stringify(ev.token)
-                    }
-                }).done(function (payload) {
-                    if (payload.message === 'OK') {
+                var data = new FormData;
+                data.append('token', ev.token.id);
+                fetch({link charge}, {
+                    method: 'POST',
+                    body: data
+                }).then(function (response) {
+                    if (response.ok) {
                         ev.complete('success');
                         document.location.href = {$successUrl};
                     } else {

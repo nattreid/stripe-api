@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace NAttreid\StripeApi\DI;
 
 use NAttreid\Routing\RouterFactory;
+use NAttreid\StripeApi\Control\CardElement;
+use NAttreid\StripeApi\Control\CardPayment;
+use NAttreid\StripeApi\Control\ICardElementFactory;
+use NAttreid\StripeApi\Control\ICardPaymentFactory;
 use NAttreid\StripeApi\Control\IMasterPassButtonFactory;
 use NAttreid\StripeApi\Control\IPayButtonFactory;
 use NAttreid\StripeApi\Control\IPaymentFactory;
@@ -61,6 +65,16 @@ class AbstractStripeApiExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('masterPassButton'))
 			->setImplement(IMasterPassButtonFactory::class)
 			->setFactory(MasterPassButton::class)
+			->setArguments([$config['debug'], $stripeApi]);
+
+		$builder->addDefinition($this->prefix('cardPayment'))
+			->setImplement(ICardPaymentFactory::class)
+			->setFactory(CardPayment::class)
+			->setArguments([$config['debug'], $stripeApi]);
+
+		$builder->addDefinition($this->prefix('cardElement'))
+			->setImplement(ICardElementFactory::class)
+			->setFactory(CardElement::class)
 			->setArguments([$config['debug'], $stripeApi]);
 
 		$builder->addDefinition($this->prefix('router'))

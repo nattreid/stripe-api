@@ -8,25 +8,23 @@
             source.redirect = {
                 return_url: {link //charge}
             };
-            stripe.createSource(source)
-                .then(function (result) {
-                    if (result.source !== null) {
-                        $.ajax({
-                            url: {link authorize},
-                            data: {
-                                json: JSON.stringify(result.source)
-                            }
-                        }).done(function (payload) {
-                            if (payload.message === 'OK') {
-                                document.location.href = result.source.redirect.url;
-                            } else {
-                                document.location.href = {$errorUrl};
-                            }
-                        });
-                    } else {
-                        document.location.href = {$errorUrl};
-                    }
-                });
+            stripe.createSource(source).then(function (result) {
+                if (result.source != null) {
+                    fetch({link authorize}, {
+                        method: 'POST',
+                        body: JSON.stringify(result.source),
+                        headers: {'content-type': 'application/json'},
+                    }).then(function (response) {
+                        if (response.ok) {
+                            document.location.href = result.source.redirect.url;
+                        } else {
+                            document.location.href = {$errorUrl};
+                        }
+                    });
+                } else {
+                    document.location.href = {$errorUrl};
+                }
+            });
         }
     </script>
 {/if}
