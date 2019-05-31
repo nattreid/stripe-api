@@ -41,6 +41,7 @@ abstract class AbstractPayment
 			case 'pln':
 			case 'gbp':
 			case 'huf':
+			case 'ars':
 				$price = $this->price * 100;
 		}
 		return [$currency, (int) $price];
